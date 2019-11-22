@@ -1,0 +1,7 @@
+const express = require('express')
+const mockMiddlewareCreator = require('./src/index')
+const path = require('path')
+const app = express()
+const cwd = process.cwd()
+app.use('/mock/*', mockMiddlewareCreator({prefix: '/mock', dir: path.resolve(cwd, 'mock')}))
+app.listen(300)
