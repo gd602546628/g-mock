@@ -1,10 +1,10 @@
 g-mock是基于express的中间件，根据url匹配本地文件，提供mock功能
 
-####安装
+#### 安装
 ``npm install g-mock --save``
 
 
-####使用
+#### 使用
 ```javascript
 const express = require('express')
 const mockMiddlewareCreator = require('gd-mock')
@@ -15,7 +15,7 @@ app.use('/mock/*', mockMiddlewareCreator({prefix: '/mock', dir: path.resolve(cwd
 app.listen(300)
 ```
 
-####匹配规则
+#### 匹配规则
 下划线开头的目录或文件会生成动态匹配
 
 ``
@@ -27,6 +27,7 @@ app.listen(300)
 └─_path
         other.js
         id.js
+        
 ``
 如上目录结构将会转换成如下规则
 ``
@@ -46,7 +47,7 @@ app.listen(300)
 
 原则上应当避免同一个url可以匹配多个规则
 
-####mock文件
+#### mock文件
 每个文件导出一个函数，函数返回值为Mock值
 ```javascript
 module.exports = () => {
