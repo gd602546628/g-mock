@@ -26,15 +26,12 @@ app.listen(300)
 │      
 └─_path
         other.js
-        id.js
-        
+        id.js   
 ``
 如上目录结构将会转换成如下规则
-``
- /path/
+``/path/
  /path/other
  /path/:id
- 
  /:path/other  
  /:path/id 
 ``
