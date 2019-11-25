@@ -1,5 +1,5 @@
 {
-  "name": "mock-middleware",
+  "name": "gd-mock",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,10 +7,10 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "mock"
+    "mock","express","middleware"
   ],
   "author": "gd",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "express": "^4.17.1",
     "glob": "^7.1.6",

@@ -1,4 +1,3 @@
-const glob = require('glob')
 const cwd = process.cwd()
 const path = require('path')
 const fs = require('fs')
@@ -6,8 +5,12 @@ const pathToReg = require('path-to-regexp')
 
 function middlewareCreator({prefix = '/mock', dir = path.resolve(cwd, 'mock')}) {
     return (req, res, next) => {
-        getMockFile(prefix, req.originalUrl, dir)
-        res.end('sss')
+        const file = getMockFile(prefix, req.originalUrl, dir)
+        if (!file) {
+            response404(res,req)
+        } else {
+            responseSuccess(file, res)
+        }
     }
 }
 
@@ -77,7 +80,12 @@ function getMockFile(prefix, originalUrl, dir) {
             matchs.push({match: match, reg: re, item: item})
         }
     })
-    console.log(matchs)
+    matchs.sort((a, b) => {
+        return a.reg.toString().length - b.reg.toString().length
+    })
+    if (matchs[0]) {
+        return matchs[0].item.filePath
+    }
 }
 
 function BFS(tree, callback) { // 对path树的广度优先遍历,
@@ -94,10 +102,40 @@ function BFS(tree, callback) { // 对path树的广度优先遍历,
     }
 }
 
-function responseErr() {
+function responseSuccess(file, res) {
+    const fn = forceRequire(file)
+    if (typeof fn !== 'function') {
+        responseErr(res,file)
+        return
+    }
+    let result = fn()
+    if (typeof result.then === 'function') { // promise
+        result.then(data => {
+            responseJSON(res,data)
+        })
+    } else {
+        responseJSON(res, result)
+    }
 }
 
-function forceRequire(reqPath) {
+function responseJSON(res, json) {
+    const result = typeof json === 'object' ? JSON.stringify(json) : json
+    res.end(result)
+}
+
+function response404(res,req) {
+    res.statusCode = 404;
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.end(`<p>url:${req.originalUrl},没有匹配的Mock文件</p>`);
+}
+
+function responseErr(res,file) {
+    res.statusCode = 500;
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.end(`<p>${file},该文件返回的不是函数,请检查</p>`);
+}
+
+function forceRequire(reqPath) { // 清除缓存，实现mock修改时能及时更新
     delete require.cache[reqPath];
     return require(reqPath);
 }
